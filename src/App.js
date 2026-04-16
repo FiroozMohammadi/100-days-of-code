@@ -1,30 +1,53 @@
 import { useState } from 'react';
 import './App.css';
-import Profile from './profile';
 
 function App() {
-const[message, setMessage]=useState("");
-const[name, setName]=useState("");
-const[input, setInput]=useState("");
+ // const task=["learn react","solve problem","play football"];
 
-function handlChange(event){
-  setName(event.target.value);
-}
-  function onClick(){
-    // alert("done");
-    setMessage("done");
+  const[tasks,setTasks]=useState([]);
+  const[input, setInput]=useState("");
+
+  function addTask(){
+    setTasks([...tasks,input]);
+    setInput("");
   }
+// const[message, setMessage]=useState("");
+// const[name, setName]=useState("");
+
+
+// function handlChange(event){
+//   setName(event.target.value);
+// }
+//   function onClick(){
+//     // alert("done");
+//     setMessage("done");
+//   }
   return (
     <div>
-      <h1>Create simple UI - Day 4</h1>
-     <Profile fullname="Fahim Rahimi" username="fahim11"/>
-     <button onClick={onClick}>Click</button>
-     <button onClick={()=> setMessage("clicked")}>click button</button>
-     <p>{message}</p>
-     <input type='text' onChange={handlChange} placeholder='Enter Name' />
-     <input type='text' onChange={(e)=>setInput(e.target.value)} placeholder='Enter lastname' />
-     <button onClick={()=>setName(input)}>click</button>
-     <p>{name}</p>
+      <h1>Lists + map - Day 5</h1>
+     {/* <Profile fullname="Fahim Rahimi" username="fahim11"/> */}
+     {/* <button onClick={onClick}>Click</button> */}
+     {/* <button onClick={()=> setMessage("clicked")}>click button</button> */}
+     {/* <p>{message}</p> */}
+     {/* <input type='text' onChange={handlChange} placeholder='Enter Name' /> */}
+     {/* <input type='text' onChange={(e)=>setInput(e.target.value)} placeholder='Enter lastname' /> */}
+     {/* <button onClick={()=>setName(input)}>click</button> */}
+     {/* <p>{name}</p> */}
+
+    
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Add task"
+      />
+     <button onClick={addTask}>add task</button>
+
+    <ul>
+        {tasks.map((task, index) => (
+          <li key={index}>{task}</li>
+        ))}
+      </ul>
     </div>
   );
 }
