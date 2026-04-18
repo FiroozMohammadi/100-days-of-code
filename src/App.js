@@ -43,8 +43,8 @@ function App() {
 //     setMessage("done");
 //   }
   return (
-    <div>
-      <h1>delete + update - Day 6</h1>
+    <div className='container'>
+      <h1>Styling clean UI - Day 7</h1>
      {/* <Profile fullname="Fahim Rahimi" username="fahim11"/> */}
      {/* <button onClick={onClick}>Click</button> */}
      {/* <button onClick={()=> setMessage("clicked")}>click button</button> */}
