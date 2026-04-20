@@ -29,7 +29,13 @@ function App() {
 
     setInput("");
   }
-
+  const[posts,setPost]=useState([]);
+  const[loading,setLoading]=useState(true);
+  useEffect(()=>{
+    fetch("https://jsonplaceholder.typicode.com/posts")
+    .then((res)=>res.json())
+    .then((data)=>{setPost(data.slice(0,5));setLoading(false);});
+  },[]);
   function deleteTask(index) {
     setTasks(tasks.filter((_, i) => i !== index));
   }
@@ -40,8 +46,9 @@ function App() {
   }
 
   return (
-    <div className="container">
-      <h1>save item temporary - Day 8</h1>
+    <div >
+      <div className="container">
+        <h1>API - Day 9</h1>
   
 
     
@@ -65,7 +72,20 @@ function App() {
           </li>
         ))}
       </ul>
+      </div>
+
+      <div className="container"> 
+        {loading?<p>loading...</p>:(        <ul>
+        {posts.map((post)=>(<li key={post.id}>
+          <strong>{post.title}</strong>
+          <p>{post.body}</p>
+        </li>))}
+      </ul>)}
+
+        </div>
+
     </div>
+    
   );
 }
 
