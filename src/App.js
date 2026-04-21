@@ -40,6 +40,21 @@ function App() {
     setTasks(tasks.filter((_, i) => i !== index));
   }
 
+  function sendData(){
+    fetch("https://jsonplaceholder.typicode.com/posts",{
+      method: "POST",
+      headers:{
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: input,
+        body: "User task",
+        userId: 1,
+      }),
+    })
+    .then((res)=>res.json())
+    .then ((data)=>console.log(data));
+  }
   function editTask(index) {
     setInput(tasks[index]);
     setEditIndex(index);
@@ -48,7 +63,7 @@ function App() {
   return (
     <div >
       <div className="container">
-        <h1>API - Day 9</h1>
+        <h1>sending data - Day 10</h1>
   
 
     
@@ -72,6 +87,7 @@ function App() {
           </li>
         ))}
       </ul>
+      <button onClick={sendData}>Send to API</button>
       </div>
 
       <div className="container"> 
