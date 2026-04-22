@@ -3,67 +3,39 @@ import './App.css';
 
 function App() {
 
-  const[tasks,setTasks]=useState(()=>{
-    const saved=localStorage.getItem("tasks");
-    return saved? JSON.parse(saved):[];
-  });
-  
- useEffect(() => {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-}, [tasks]);
+    const[tasks,setTasks]=useState([]);
+    const[input,setInput]=useState("");
 
-  const[input, setInput]=useState("");
-  const [editIndex, setEditIndex] = useState(null);
+    const API_URL="https://localhost:7107/api/task";
+    useEffect(()=>{
+      fetch(API_URL)
+      .then(res=>res.json())
+      .then(data=>setTasks(data))
+      .catch((err)=>console.log(err));
+    },[]);
 
-  function addTask() {
+     function sendData() {
     if (input.trim() === "") return;
 
-    if (editIndex !== null) {
-      const updatedTasks = [...tasks];
-      updatedTasks[editIndex] = input;
-      setTasks(updatedTasks);
-      setEditIndex(null);
-    } else {
-      setTasks([...tasks, input]);
-    }
-
-    setInput("");
-  }
-  const[posts,setPost]=useState([]);
-  const[loading,setLoading]=useState(true);
-  useEffect(()=>{
-    fetch("https://jsonplaceholder.typicode.com/posts")
-    .then((res)=>res.json())
-    .then((data)=>{setPost(data.slice(0,5));setLoading(false);});
-  },[]);
-  function deleteTask(index) {
-    setTasks(tasks.filter((_, i) => i !== index));
-  }
-
-  function sendData(){
-    fetch("https://jsonplaceholder.typicode.com/posts",{
+    fetch(API_URL, {
       method: "POST",
-      headers:{
+      headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        title: input,
-        body: "User task",
-        userId: 1,
-      }),
+      body: JSON.stringify({title: input}),
     })
-    .then((res)=>res.json())
-    .then ((data)=>console.log(data));
-  }
-  function editTask(index) {
-    setInput(tasks[index]);
-    setEditIndex(index);
+      .then((res) => res.json())
+      .then((data) => {
+        setTasks(data);
+        setInput("");  
+      })
+      .catch((err) => console.log(err));
   }
 
+
   return (
-    <div >
-      <div className="container">
-        <h1>sending data - Day 10</h1>
+   <div className="container">
+        <h1>send and fetch data by API - Day 11</h1>
   
 
     
@@ -72,36 +44,18 @@ function App() {
         type="text"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Add or edit task"
+        placeholder="enter task"
       />
-     <button onClick={addTask}>
-        {editIndex !== null ? "Update" : "Add"}
+     <button onClick={sendData}>
+       add task
       </button>
 
-    <ul>
+      <ul>
         {tasks.map((task, index) => (
-          <li key={index}>
-            {task}
-            <button onClick={() => editTask(index)}>Edit</button>
-            <button onClick={() => deleteTask(index)}>Delete</button>
-          </li>
-        ))}
+  <li key={index}>{task.title}</li>
+))}
       </ul>
-      <button onClick={sendData}>Send to API</button>
       </div>
-
-      <div className="container"> 
-        {loading?<p>loading...</p>:(        <ul>
-        {posts.map((post)=>(<li key={post.id}>
-          <strong>{post.title}</strong>
-          <p>{post.body}</p>
-        </li>))}
-      </ul>)}
-
-        </div>
-
-    </div>
-    
   );
 }
 
