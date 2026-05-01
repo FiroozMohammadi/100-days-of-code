@@ -9,6 +9,7 @@ function App() {
   const [input, setInput] = useState("");
   const [editId, setEditId] = useState(null);
   const [search, setSearch] = useState("");
+  const [filter, setFilter]=useState("all");
 
   const API_URL = "https://localhost:7107/api/task";
 
@@ -102,10 +103,16 @@ function App() {
       });
   }
 
-  const filteredTasks = tasks.filter(task =>
+ 
+const filteredTasks = tasks
+  .filter(task =>
     task.title.toLowerCase().includes(search.toLowerCase())
-  );
-
+  )
+  .filter(task => {
+    if (filter === "active") return !task.isCompleted;
+    if (filter === "completed") return task.isCompleted;
+    return true; 
+  });
   return (
     <div className="container">
 
@@ -120,6 +127,11 @@ function App() {
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search tasks..."
       />
+      <div style={{margin: "10px 0"}}>
+        <button onClick={()=>setFilter("all")}>All</button>
+        <button onClick={()=>setFilter("active")}>Active</button>
+        <button onClick={()=>setFilter("complete")}>Complete</button>
+      </div>
 
       <div className="input-group">
         <input
