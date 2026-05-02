@@ -102,8 +102,20 @@ function App() {
         setLoading(false);
       });
   }
+function clearCompleted() {
+  const completedTasks = tasks.filter(t => t.isCompleted);
 
- 
+  Promise.all(
+    completedTasks.map(task =>
+      fetch(`${API_URL}/${task.id}`, { method: "DELETE" })
+    )
+  ).then(() => {
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => setTasks(data));
+  });
+}
+ const activeCount = tasks.filter(t => !t.isCompleted).length;
 const filteredTasks = tasks
   .filter(task =>
     task.title.toLowerCase().includes(search.toLowerCase())
@@ -145,11 +157,13 @@ const filteredTasks = tasks
           {editId ? "Update" : "Add"}
         </button>
       </div>
-
+      <button onClick={clearCompleted}>
+        Clear Completed
+      </button>
       {!loading && filteredTasks.length === 0 && (
         <p>No tasks found...</p>
       )}
-
+<p>{activeCount} tasks left</p>
       <ul>
         {filteredTasks.map((task) => (
           <li key={task.id}>
