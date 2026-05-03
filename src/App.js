@@ -11,7 +11,7 @@ function App() {
   const [search, setSearch] = useState("");
   const [filter, setFilter]=useState("all");
 
-  const API_URL = "https://localhost:7107/api/task";
+  const API_URL = "https://task-manager-api-jo0c.onrender.com/api/task";
 
   useEffect(() => {
     setLoading(true);
