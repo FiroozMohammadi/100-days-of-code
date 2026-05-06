@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./task.css";
+
 function TaskPage({ setUser }) {
 
   const [tasks, setTasks] = useState([]);
@@ -7,23 +8,36 @@ function TaskPage({ setUser }) {
   const [editId, setEditId] = useState(null);
   const [filter, setFilter] = useState("all");
 
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const pageSize = 5;
+
   const API = "https://localhost:7107/api/task";
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    refresh();
-  }, []);
+    fetchTasks();
+  }, [page]);
 
-  function refresh() {
-    fetch(API, {
-      headers: { "Authorization": "Bearer " + token }
+function fetchTasks() {
+  fetch(`${API}?page=${page}&pageSize=${pageSize}`, {
+    headers: { Authorization: "Bearer " + token }
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log("API DATA:", data); 
+
+      setTasks(data.data || []); 
+      setTotal(data.total || 0);
     })
-      .then(res => res.json())
-      .then(data => setTasks(data));
-  }
+    .catch(err => {
+      console.error("Fetch error:", err);
+      setTasks([]); 
+    });
+}
 
   function handleSave() {
-    if (!input) return;
+    if (!input.trim()) return;
 
     const method = editId ? "PUT" : "POST";
     const url = editId ? `${API}/${editId}` : API;
@@ -41,15 +55,16 @@ function TaskPage({ setUser }) {
     }).then(() => {
       setInput("");
       setEditId(null);
-      refresh();
+      setPage(1); 
+      fetchTasks();
     });
   }
 
   function deleteTask(id) {
     fetch(`${API}/${id}`, {
       method: "DELETE",
-      headers: { "Authorization": "Bearer " + token }
-    }).then(() => refresh());
+      headers: { Authorization: "Bearer " + token }
+    }).then(() => fetchTasks());
   }
 
   function editTask(task) {
@@ -68,7 +83,7 @@ function TaskPage({ setUser }) {
         title: task.title,
         isCompleted: !task.isCompleted
       })
-    }).then(() => refresh());
+    }).then(() => fetchTasks());
   }
 
   const filteredTasks = tasks.filter(task => {
@@ -80,7 +95,7 @@ function TaskPage({ setUser }) {
   return (
     <div className="container">
 
-      <h2>Task Manager Day-21</h2>
+      <h2>Task Manager Day-22</h2>
 
       <button onClick={() => {
         localStorage.removeItem("token");
@@ -110,25 +125,43 @@ function TaskPage({ setUser }) {
       <ul>
         {filteredTasks.map(task => (
           <li key={task.id}>
-
             <span className={task.isCompleted ? "completed" : ""}>
               {task.title}
             </span>
 
             <div>
-
               <button onClick={() => toggleComplete(task)}>
-                {task.isCompleted ? "Uncomplete" : "Complete"}
+                {task.isCompleted ? "Undo" : "Complete"}
               </button>
 
               <button onClick={() => editTask(task)}>Edit</button>
               <button onClick={() => deleteTask(task.id)}>Delete</button>
-
             </div>
-
           </li>
         ))}
       </ul>
+
+      <div style={{ marginTop: "15px" }}>
+
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+        >
+          Prev
+        </button>
+
+        <span> Page {page} </span>
+
+        <button
+          disabled={page * pageSize >= total}
+          onClick={() => setPage(page + 1)}
+        >
+          Next
+        </button>
+
+      </div>
+
+      <p>Total Tasks: {total}</p>
 
     </div>
   );
