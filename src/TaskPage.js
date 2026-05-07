@@ -8,12 +8,23 @@ function TaskPage({ setUser }) {
   const [editId, setEditId] = useState(null);
   const [filter, setFilter] = useState("all");
 
+  const [darkMode, setDarkMode] = useState(
+  localStorage.getItem("darkMode") === "true"
+);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const pageSize = 5;
 
   const API = "https://localhost:7107/api/task";
   const token = localStorage.getItem("token");
+
+  function toggleDarkMode() {
+    const newMode = !darkMode;
+
+    setDarkMode(newMode);
+
+    localStorage.setItem("darkMode", newMode);
+  }
 
   useEffect(() => {
     fetchTasks();
@@ -93,10 +104,12 @@ function fetchTasks() {
   });
 
   return (
-    <div className="container">
+    <div className={darkMode ? "container dark" : "container"}>
 
-      <h2>Task Manager Day-22</h2>
-
+      <h2>Task Manager Day-23</h2>
+    <button onClick={() => setDarkMode(!darkMode)}>
+      {darkMode ? "Light Mode ☀️" : "Dark Mode 🌙"}
+    </button>
       <button onClick={() => {
         localStorage.removeItem("token");
         setUser(null);

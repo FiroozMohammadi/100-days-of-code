@@ -114,3 +114,42 @@ li div button:nth-child(3) {
 li div button:hover {
   transform: scale(1.05);
 }
+
+
+/* DARK MODE */
+
+.container.dark {
+  background: #1e1e1e;
+  color: white;
+}
+
+.container.dark h2 {
+  color: white;
+}
+
+.container.dark input {
+  background: #2c2c2c;
+  color: white;
+  border: 1px solid #555;
+}
+
+.container.dark li {
+  background: #2a2a2a;
+}
+
+.container.dark li span {
+  color: white;
+}
+
+.container.dark button {
+  background: #333;
+  color: white;
+}
+
+.container.dark button:hover {
+  opacity: 0.9;
+}
+
+.container.dark .completed {
+  color: #aaa;
+}
