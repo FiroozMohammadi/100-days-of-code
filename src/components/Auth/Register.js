@@ -6,18 +6,35 @@ function Register({ switchToLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const API = "https://localhost:7107/api/auth";
+  const API = "https://localhost:7107/api/auth"; 
 
   function handleRegister() {
+
+    if (!username || !password) {
+      alert("Please fill all fields");
+      return;
+    }
+
     fetch(`${API}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
     })
-      .then(res => res.text())
+      .then(async (res) => {
+
+        if (!res.ok) {
+          const msg = await res.text();
+          throw new Error(msg || "Register failed");
+        }
+
+        return res.text();
+      })
       .then(() => {
-        alert("User created");
-        switchToLogin(); 
+        alert("User created successfully");
+        switchToLogin();
+      })
+      .catch((err) => {
+        alert(err.message);
       });
   }
 
@@ -30,12 +47,14 @@ function Register({ switchToLogin }) {
         <input
           type="text"
           placeholder="Username"
+          value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 

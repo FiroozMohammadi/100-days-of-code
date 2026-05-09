@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import TaskPage from "./TaskPage";
@@ -6,10 +8,10 @@ import TaskPage from "./TaskPage";
 function App() {
 
   const [user, setUser] = useState(null);
-  const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
     const token = localStorage.getItem("token");
 
     if (token && token !== "undefined" && token !== "null") {
@@ -17,22 +19,64 @@ function App() {
     }
 
     setLoading(false);
+
   }, []);
 
   if (loading) return <p>Loading...</p>;
 
-  if (!user) {
-    return isRegister ? (
-      <Register switchToLogin={() => setIsRegister(false)} />
-    ) : (
-      <Login
-        setUser={setUser}
-        switchToRegister={() => setIsRegister(true)}
-      />
-    );
-  }
+  const ProtectedRoute = ({ children }) => {
 
-  return <TaskPage setUser={setUser} />;
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      return <Navigate to="/" />;
+    }
+
+    return children;
+  };
+
+  return (
+
+    <BrowserRouter>
+
+      <Routes>
+
+        <Route
+          path="/"
+          element={
+            user
+              ? <Navigate to="/tasks" />
+              : <Login setUser={setUser} />
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            user
+              ? <Navigate to="/tasks" />
+              : <Register />
+          }
+        />
+
+        <Route
+          path="/tasks"
+          element={
+            <ProtectedRoute>
+              <TaskPage setUser={setUser} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="*"
+          element={<h1>404 - Page Not Found</h1>}
+        />
+
+      </Routes>
+
+    </BrowserRouter>
+  );
 }
 
 export default App;

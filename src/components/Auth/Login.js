@@ -1,17 +1,21 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import "./Auth.css";
 
-function Login({ setUser, switchToRegister }) {
+function Login({ setUser }) {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
 
   const API = "https://localhost:7107/api/auth";
 
   function handleLogin() {
 
     if (!username || !password) {
-      alert("Please fill all fields");
+      toast.error("Please fill all fields");
       return;
     }
 
@@ -21,14 +25,29 @@ function Login({ setUser, switchToRegister }) {
       body: JSON.stringify({ username, password }),
     })
       .then(res => {
-        if (!res.ok) throw new Error();
+
+        if (!res.ok) {
+          throw new Error("Login failed");
+        }
+
         return res.json();
       })
       .then(data => {
+
         localStorage.setItem("token", data.token);
+
         setUser({ token: data.token });
+
+        toast.success("Login successful");
+
+        navigate("/tasks");
+
       })
-      .catch(() => alert("Invalid username or password"));
+      .catch(() => {
+
+        toast.error("Invalid username or password");
+
+      });
   }
 
   return (
@@ -40,12 +59,14 @@ function Login({ setUser, switchToRegister }) {
         <input
           type="text"
           placeholder="Username"
+          value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
@@ -55,7 +76,10 @@ function Login({ setUser, switchToRegister }) {
             Login
           </button>
 
-          <button className="secondary" onClick={switchToRegister}>
+          <button
+            className="secondary"
+            onClick={() => navigate("/register")}
+          >
             Create Account
           </button>
 
