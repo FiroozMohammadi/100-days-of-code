@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./task.css";
+import Layout from "../components/Layout";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -22,9 +22,7 @@ function TaskPage({ setUser }) {
   const [total, setTotal] = useState(0);
 
   const pageSize = 5;
-
   const API = "https://localhost:7107/api/task";
-
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -33,9 +31,7 @@ function TaskPage({ setUser }) {
 
   function toggleDarkMode() {
     const newMode = !darkMode;
-
     setDarkMode(newMode);
-
     localStorage.setItem("darkMode", newMode);
   }
 
@@ -53,9 +49,7 @@ function TaskPage({ setUser }) {
         setTotal(data.total || 0);
 
       })
-      .catch(err => {
-
-        console.error(err);
+      .catch(() => {
 
         toast.error("Failed to load tasks");
 
@@ -66,33 +60,19 @@ function TaskPage({ setUser }) {
 
   function handleSave() {
 
-
     if (!input.trim()) {
       toast.error("Task title is required");
       return;
     }
 
-    if (input.length < 3) {
-      toast.error("Minimum 3 characters");
-      return;
-    }
-
-    if (input.length > 50) {
-      toast.error("Maximum 50 characters");
-      return;
-    }
-
     const method = editId ? "PUT" : "POST";
-
-    const url = editId
-      ? `${API}/${editId}`
-      : API;
+    const url = editId ? `${API}/${editId}` : API;
 
     fetch(url, {
       method,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
+        Authorization: "Bearer " + token
       },
       body: JSON.stringify({
         title: input,
@@ -102,11 +82,7 @@ function TaskPage({ setUser }) {
     })
       .then(() => {
 
-        toast.success(
-          editId
-            ? "Task updated successfully"
-            : "Task added successfully"
-        );
+        toast.success(editId ? "Task updated" : "Task added");
 
         setInput("");
         setDueDate("");
@@ -123,9 +99,7 @@ function TaskPage({ setUser }) {
   }
 
   function confirmDelete(id) {
-
     setSelectedId(id);
-
     setShowModal(true);
   }
 
@@ -152,11 +126,8 @@ function TaskPage({ setUser }) {
   }
 
   function editTask(task) {
-
     setInput(task.title);
-
     setEditId(task.id);
-
     setDueDate(task.dueDate || "");
   }
 
@@ -166,7 +137,7 @@ function TaskPage({ setUser }) {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
+        Authorization: "Bearer " + token
       },
       body: JSON.stringify({
         title: task.title,
@@ -190,150 +161,120 @@ function TaskPage({ setUser }) {
 
   const filteredTasks = tasks.filter(task => {
 
-    if (filter === "active")
-      return !task.isCompleted;
+    if (filter === "active") return !task.isCompleted;
 
-    if (filter === "completed")
-      return task.isCompleted;
+    if (filter === "completed") return task.isCompleted;
 
     return true;
   });
 
   return (
 
-    <div className={darkMode ? "container dark" : "container"}>
+    <Layout setUser={setUser}>
 
-      <ToastContainer />
+      <div className={darkMode ? "container dark" : "container"}>
 
-      <h2>Task Manager Day-24</h2>
+        <ToastContainer />
 
-      <button onClick={toggleDarkMode}>
-        {darkMode ? "Light Mode ☀️" : "Dark Mode 🌙"}
-      </button>
+        <h2>Task Manager Day-26</h2>
 
-      <button onClick={() => {
-
-        localStorage.removeItem("token");
-
-        setUser(null);
-
-      }}>
-        Logout
-      </button>
-
-      <div style={{ margin: "10px 0" }}>
-
-        <button onClick={() => setFilter("all")}>
-          All
+        <button onClick={toggleDarkMode}>
+          {darkMode ? "Light Mode ☀️" : "Dark Mode 🌙"}
         </button>
 
-        <button onClick={() => setFilter("active")}>
-          Active
-        </button>
+        <div style={{ margin: "10px 0" }}>
 
-        <button onClick={() => setFilter("completed")}>
-          Completed
-        </button>
+          <button onClick={() => setFilter("all")}>All</button>
+          <button onClick={() => setFilter("active")}>Active</button>
+          <button onClick={() => setFilter("completed")}>Completed</button>
 
-      </div>
+        </div>
 
-      <div>
+        <div>
 
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter task..."
-        />
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Enter task..."
+          />
 
-        <input
-          type="date"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-        />
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+          />
 
-        <button onClick={handleSave}>
-          {editId ? "Update" : "Add"}
-        </button>
+          <button onClick={handleSave}>
+            {editId ? "Update" : "Add"}
+          </button>
 
-        <p>{input.length}/50</p>
+        </div>
 
-      </div>
+        <ul>
 
-      <ul>
+          {filteredTasks.map(task => (
 
-        {filteredTasks.length === 0 && (
-          <p>No tasks found.</p>
-        )}
+            <li key={task.id}>
 
-        {filteredTasks.map(task => (
+              <div>
 
-          <li key={task.id}>
+                <span className={task.isCompleted ? "completed" : ""}>
+                  {task.title}
+                </span>
 
-            <div>
+                <br />
 
-              <span className={task.isCompleted ? "completed" : ""}>
-                {task.title}
-              </span>
+                <small>
+                  Due Date: {task.dueDate || "No date"}
+                </small>
 
-              <br />
+              </div>
 
-              <small>
-                Due Date: {task.dueDate || "No date"}
-              </small>
+              <div>
 
-            </div>
+                <button onClick={() => toggleComplete(task)}>
+                  {task.isCompleted ? "Undo" : "Complete"}
+                </button>
 
-            <div>
+                <button onClick={() => editTask(task)}>
+                  Edit
+                </button>
 
-              <button onClick={() => toggleComplete(task)}>
+                <button onClick={() => confirmDelete(task.id)}>
+                  Delete
+                </button>
 
-                {task.isCompleted
-                  ? "Undo"
-                  : "Complete"}
+              </div>
 
-              </button>
+            </li>
 
-              <button onClick={() => editTask(task)}>
-                Edit
-              </button>
+          ))}
 
-              <button onClick={() => confirmDelete(task.id)}>
-                Delete
-              </button>
+        </ul>
 
-            </div>
+        <div style={{ marginTop: "15px" }}>
 
-          </li>
+          <button
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            Prev
+          </button>
 
-        ))}
+          <span> Page {page} </span>
 
-      </ul>
+          <button
+            disabled={page * pageSize >= total}
+            onClick={() => setPage(page + 1)}
+          >
+            Next
+          </button>
 
-      <div style={{ marginTop: "15px" }}>
+        </div>
 
-        <button
-          disabled={page === 1}
-          onClick={() => setPage(page - 1)}
-        >
-          Prev
-        </button>
+        <p>Total Tasks: {total}</p>
 
-        <span> Page {page} </span>
-
-        <button
-          disabled={page * pageSize >= total}
-          onClick={() => setPage(page + 1)}
-        >
-          Next
-        </button>
-
-      </div>
-
-      <p>Total Tasks: {total}</p>
-
-
-      {
-        showModal && (
+        {showModal && (
 
           <div className="modal-overlay">
 
@@ -341,16 +282,11 @@ function TaskPage({ setUser }) {
 
               <h3>Delete Task?</h3>
 
-              <p>
-                Are you sure you want to delete this task?
-              </p>
+              <p>Are you sure?</p>
 
               <button onClick={() => {
-
                 deleteTask(selectedId);
-
                 setShowModal(false);
-
               }}>
                 Yes
               </button>
@@ -362,10 +298,12 @@ function TaskPage({ setUser }) {
             </div>
 
           </div>
-        )
-      }
 
-    </div>
+        )}
+
+      </div>
+
+    </Layout>
   );
 }
 

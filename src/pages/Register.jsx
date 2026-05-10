@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "./Auth.css";
 
 function Register({ switchToLogin }) {
 

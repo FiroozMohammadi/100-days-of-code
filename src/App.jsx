@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
-import Login from "./components/Auth/Login";
-import Register from "./components/Auth/Register";
-import TaskPage from "./TaskPage";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import TaskPage from "./pages/TaskPage.jsx";
+import './styles/Auth.css';
+import "./styles/task.css";
+import "./styles/dashboard.css";
 
 function App() {
 
